@@ -10,7 +10,8 @@ def test_fail_to_connect():
         assert scraper.get_page_data("https://en.wikipedia.org/wiki/random_blabla")
 
 def test_can_return_title():
-    assert (scraper.get_title() == "Title of Page")
+    response = scraper.get_page_data("https://en.wikipedia.org/wiki/Web_scraping")
+    assert (scraper.get_title(response) == "Web scraping")
 
 def test_can_return_list_of_links():
     assert (type(scraper.get_links()) is list)

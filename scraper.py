@@ -1,5 +1,6 @@
 import requests
 from requests.exceptions import HTTPError
+from bs4 import BeautifulSoup
 
 def main():
     pass
@@ -9,8 +10,10 @@ def get_page_data(url):
     response.raise_for_status()
     return response
 
-def get_title():
-    pass
+def get_title(response):
+    soup = BeautifulSoup(response.content, 'html.parser')
+    title = soup.find(id="firstHeading")
+    return title.text
 
 def get_links():
     pass
