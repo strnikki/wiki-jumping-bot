@@ -4,8 +4,10 @@ from requests.exceptions import HTTPError
 def main():
     pass
 
-def get_page_data():
-    pass
+def get_page_data(url):
+    response = requests.get(url)
+    response.raise_for_status()
+    return response
 
 def get_title():
     pass
