@@ -47,11 +47,14 @@ def get_new_article(soup):
 def get_list_of_titles(url, n_steps):
     titles = []
     for _ in range(n_steps):
-        response = get_page_data(url)
-        soup = parse_html(response.content)
-        title = get_title(soup)
-        titles.append(title)
-        url = get_new_article(soup)
+        try:
+            response = get_page_data(url)
+            soup = parse_html(response.content)
+            title = get_title(soup)
+            titles.append(title)
+            url = get_new_article(soup)
+        except OutOfLinksException:
+            break
     return titles
 
 def parse_html(response):
