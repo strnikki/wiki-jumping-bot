@@ -3,6 +3,8 @@ from requests.exceptions import HTTPError
 from bs4 import BeautifulSoup
 import random
 
+class OutOfLinksException(Exception): pass
+
 def main():
     pass
 
@@ -15,25 +17,31 @@ def get_title(soup):
     title = soup.find(id="firstHeading")
     return title.text
 
-def get_new_article(links):
-    # allLinks = soup.body.find_all("a")
-    # random.shuffle(allLinks)
-    for link in links:
-        if ("/wiki/" in link):
-            link_split = link.split("/wiki/")
-            if "#" in link_split[1] or ":" in link_split[1]:
+def get_new_article(soup):
+    allLinks = soup.find(id="content").find_all("a")
+    random.shuffle(allLinks)
+
+    for link in allLinks:
+        link = link.get("href", "")
+        if "/wiki/" in link:
+            if "#" in link or ":" in link:
                 continue
+            link = "https://en.wikipedia.org" + link
             return link
-    raise Exception("Out of links to follow")
+    raise OutOfLinksException("Out of links to follow")
 
 def get_list_of_titles(url, n_steps):
-    pass
-    # titles = []
-    # for i in range(n_steps):
-    #     page_body = get_page_data(url).text
-    #     titles.append(get_title(page_body))
-    #     titles
+    titles = []
+    for _ in range(n_steps):
+        response = get_page_data(url)
+        soup = parse_html(response)
+        title = get_title(soup)
+        titles.append(title)
+        links = return_links_from_soup(soup)
+        url = get_new_article(links)
+        print(url)
+    return titles
 
 def parse_html(response):
-    soup = BeautifulSoup(response.content, 'html.parser')
+    soup = BeautifulSoup(response, 'html.parser')
     return soup
