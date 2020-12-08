@@ -2,11 +2,25 @@ import requests
 from requests.exceptions import HTTPError
 from bs4 import BeautifulSoup
 import random
+import sys
 
 class OutOfLinksException(Exception): pass
 
 def main():
-    pass
+    if len(sys.argv) > 1:
+        n_steps = int(sys.argv[1])
+    else:
+        n_steps = 8
+    
+    try:
+        titles = get_list_of_titles("https://en.wikipedia.org/wiki/Special:Random", n_steps)
+        for title in titles:
+            print(title)
+    except HTTPError as http_err:
+        print(f"HTTP error occurred: {http_err}")
+    except Exception as err:
+        print(f"An error occurred: {err}")
+
 
 def get_page_data(url):
     response = requests.get(url)
@@ -43,3 +57,6 @@ def get_list_of_titles(url, n_steps):
 def parse_html(response):
     soup = BeautifulSoup(response, 'html.parser')
     return soup
+
+if __name__ == "__main__":
+    main()
