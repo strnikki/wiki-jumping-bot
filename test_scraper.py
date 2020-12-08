@@ -45,11 +45,8 @@ def test_get_new_article_fails_when_no_link():
     with pytest.raises(OutOfLinksException):
         assert scraper.get_new_article(soup)
 
-def test_can_get_links_from_soup():
-    pass
-    
 
 def test_can_return_list_of_titles():
-    # titles = scraper.get_list_of_titles("https://en.wikipedia.org/wiki/Web_scraping", 5)
-    # assert len(titles) == 5
-    assert False
+    titles = scraper.get_list_of_titles("https://en.wikipedia.org/wiki/Web_scraping", 5)
+    assert len(titles) == 5
+    assert titles[0] == "Web scraping"

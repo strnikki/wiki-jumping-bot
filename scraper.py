@@ -34,12 +34,10 @@ def get_list_of_titles(url, n_steps):
     titles = []
     for _ in range(n_steps):
         response = get_page_data(url)
-        soup = parse_html(response)
+        soup = parse_html(response.content)
         title = get_title(soup)
         titles.append(title)
-        links = return_links_from_soup(soup)
-        url = get_new_article(links)
-        print(url)
+        url = get_new_article(soup)
     return titles
 
 def parse_html(response):
