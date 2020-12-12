@@ -23,18 +23,14 @@ def main():
 
 class WikiJumpingBot:
 
-    def make_list_response(self, n_steps=8, url="https://en.wikipedia.org/wiki/Special:Random"):
-        response = []
-        titles = self.__get_list_of_titles(url, n_steps)
+    def return_titles_and_images(self, n_steps=8, url="https://en.wikipedia.org/wiki/Special:Random"):
+        data = self.__get_list_of_titles(url, n_steps)
         
-        for title in titles:
-            response.append(title)
-        
-        return response
+        return data
 
     def print_response(self, n_steps=8, url="https://en.wikipedia.org/wiki/Special:Random"):
         titles = self.__get_list_of_titles(url, n_steps)
-        for title in titles:
+        for title in titles["titles"]:
             print(title)
 
     def __get_page_data(self, url):
@@ -59,18 +55,48 @@ class WikiJumpingBot:
                 return link
         raise OutOfLinksException("Out of links to follow")
 
+
+    def __get_article_image(self, soup, name):
+        # img = soup.find(id="content").find(class_="thumbimage")
+        img = ""
+        infobox = soup.find(id="content").find(class_="infobox")
+        if infobox:
+            img = infobox.img
+        else:
+           img = soup.find(id="content").find(class_="thumbimage")
+        if img:
+            url = "https:" + img["srcset"].split()[-2]
+
+            r = requests.get(url)
+            with open(name + ".jpg", "wb") as f:
+                f.write(r.content)
+            
+            return True
+        else:
+            return False
+
     def __get_list_of_titles(self, url, n_steps):
         titles = []
-        for _ in range(n_steps):
+        images = []
+        data = {"titles" : titles, "images" : images}
+        for i in range(n_steps):
             try:
                 response = self.__get_page_data(url)
                 soup = self.__parse_html(response.content)
+
+                if i == 0:
+                    result = self.__get_article_image(soup, "first")
+                    data["images"].append(result)
+                elif i == (n_steps - 1):
+                    result = self.__get_article_image(soup, "last")
+                    data["images"].append(result)
+
                 title = self.__get_title(soup)
-                titles.append(title)
+                data["titles"].append(title)
                 url = self.__get_new_article(soup)
             except OutOfLinksException:
                 break
-        return titles
+        return data
 
     def __parse_html(self, response):
         soup = BeautifulSoup(response, 'html.parser')
