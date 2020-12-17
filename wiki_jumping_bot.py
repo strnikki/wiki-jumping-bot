@@ -30,11 +30,29 @@ def main():
 class WikiJumpingBot:
 
     def return_titles_and_images(self, n_steps=8, url="https://en.wikipedia.org/wiki/Special:Random"):
+        """Return a dict and download images from the first
+        and last article, if there are images available to download.
+
+        The dict contains two keys: 
+        - "title:   a list of each article's title
+        - "images": a list of bools indicating if the corresponding
+                    image was downloaded
+           
+        Keyword arguments:
+        n_steps -- number of steps to jump from the starting article
+        url     -- url to the starting article
+        """
         data = self.__get_list_of_titles(url, n_steps)
         
         return data
 
     def print_response(self, n_steps=8, url="https://en.wikipedia.org/wiki/Special:Random"):
+        """Print a list of each article's title
+
+        Keyword arguments:
+        real -- the real part (default 0.0)
+        imag -- the imaginary part (default 0.0)
+        """
         titles = self.__get_list_of_titles(url, n_steps)
         for title in titles["titles"]:
             print(title)
