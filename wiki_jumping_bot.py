@@ -3,19 +3,25 @@ from requests.exceptions import HTTPError
 from bs4 import BeautifulSoup
 import random
 import sys
+import argparse
 
 class OutOfLinksException(Exception): pass
 
 def main():
-    if len(sys.argv) > 1:
-        n_steps = int(sys.argv[1])
-    else:
-        n_steps = 8
+    parser = argparse.ArgumentParser(description="simulate wiki jumping by printing all articles in a number of steps")
+    parser.add_argument("-s", "--steps", type=int,
+                        help="number of articles to jump through")
+    parser.add_argument("-u", "--url", type=str,
+                        help="url to the starting article")
+    args = parser.parse_args()
+
+    n_steps = args.steps or 8
+    url = args.url or "https://en.wikipedia.org/wiki/Special:Random"
 
     bot = WikiJumpingBot()
     
     try:
-        bot.print_response(n_steps=n_steps)
+        bot.print_response(n_steps=n_steps, url=url)
     except HTTPError as http_err:
         print(f"HTTP error occurred: {http_err}")
     except Exception as err:
