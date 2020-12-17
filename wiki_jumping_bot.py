@@ -50,8 +50,8 @@ class WikiJumpingBot:
         """Print a list of each article's title
 
         Keyword arguments:
-        real -- the real part (default 0.0)
-        imag -- the imaginary part (default 0.0)
+        n_steps -- number of steps to jump from the starting article
+        url     -- url to the starting article
         """
         titles = self.__get_list_of_titles(url, n_steps)
         for title in titles["titles"]:
@@ -67,6 +67,10 @@ class WikiJumpingBot:
         return title.text
 
     def __get_new_article(self, soup):
+        """Return a new article by selecting 
+        a random link to an article in the 
+        contents of the current article
+        """
         allLinks = soup.find(id="content").find_all("a")
         random.shuffle(allLinks)
 
@@ -81,7 +85,13 @@ class WikiJumpingBot:
 
 
     def __get_article_image(self, soup, name):
-        # img = soup.find(id="content").find(class_="thumbimage")
+        """Return the first image of the article.
+
+        The method first search the infobox of the article 
+        for an image.
+        If that's not present, it search the contents of the 
+        article for an image.
+        """
         img = ""
         infobox = soup.find(id="content").find(class_="infobox")
         if infobox:
@@ -100,6 +110,14 @@ class WikiJumpingBot:
             return False
 
     def __get_list_of_titles(self, url, n_steps):
+        """Return a dict and download images from the first
+        and last article, if there are images available to download.
+
+        The dict contains two keys: 
+        - "title:   a list of each article's title
+        - "images": a list of bools indicating if the corresponding
+                    image was downloaded
+        """
         titles = []
         images = []
         data = {"titles" : titles, "images" : images}
